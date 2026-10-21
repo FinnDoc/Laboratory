@@ -1,9 +1,3 @@
-"""
-Модели ORM — как таблицы выглядят в Python.
-
-Одна строка класса ≈ одна строка в таблице.
-"""
-
 from datetime import datetime, timezone
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text
@@ -13,7 +7,7 @@ from app.database import Base
 
 
 def utc_now() -> datetime:
-    """Текущее время в UTC. В SQLite храним без часового пояса."""
+    # SQLite не хранит часовой пояс, поэтому время пишем в UTC без tzinfo.
     return datetime.now(timezone.utc).replace(tzinfo=None)
 
 

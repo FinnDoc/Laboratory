@@ -1,10 +1,3 @@
-"""
-Точка входа API новостного портала (вариант 9).
-
-Запуск из корня проекта:
-    .venv\\Scripts\\python -m uvicorn app.main:app --reload
-"""
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -21,7 +14,7 @@ app = FastAPI(
     title="News Portal API",
     description=(
         "Лабораторная №1, вариант 9. "
-        "Чтение новостей открыто, создание и правки — после входа."
+        "Читать новости можно без входа, изменять — только свои."
     ),
     version="1.0.0",
 )

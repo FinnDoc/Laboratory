@@ -62,7 +62,7 @@ export default function NewsDetailPage() {
     <article className="article-page page-wrap">
       <div className="article-toolbar">
         <Link className="back-link" to="/"><ArrowLeft size={16} /> К ленте</Link>
-        {user && (
+        {user && item.owner_id === user.id && (
           <div className="article-actions">
             <Link className="button button-outline button-small" to={`/news/${item.id}/edit`}><Edit3 size={14} /> Редактировать</Link>
             <button className="button button-danger button-small" type="button" disabled={deleting} onClick={deleteNews}>
@@ -77,7 +77,6 @@ export default function NewsDetailPage() {
         <div className="article-kicker-row">
           <span className="category-label"><span className="category-dot" />{item.category}</span>
           {!item.is_published && <span className="draft-label">Черновик</span>}
-          <span className="article-issue">МАТЕРИАЛ №{String(item.id).padStart(3, '0')}</span>
         </div>
         <h1>{item.title}</h1>
         <div className="article-byline">
@@ -90,14 +89,10 @@ export default function NewsDetailPage() {
 
       <div className="article-visual" aria-hidden="true">
         <div className="article-visual-grid" />
-        <span className="article-visual-word">СВОДКА</span>
         <span className="article-visual-big">{(item.category || 'С').slice(0, 1).toUpperCase()}</span>
-        <span className="article-visual-note">ГОРОД<br />В ФОКУСЕ</span>
-        <span className="article-visual-index">{String(item.id).padStart(2, '0')} / 24</span>
       </div>
 
       <div className="article-content-layout">
-        <aside className="article-aside"><span>01</span><span>ТЕКСТ<br />МАТЕРИАЛА</span></aside>
         <div className="article-body">
           {item.content.split(/\n+/).filter(Boolean).map((paragraph, index) => (
             <p className={index === 0 ? 'article-lead' : ''} key={`${item.id}-${index}`}>{paragraph}</p>
@@ -106,7 +101,7 @@ export default function NewsDetailPage() {
         </div>
       </div>
 
-      <div className="article-bottom-rule"><span>КОНЕЦ МАТЕРИАЛА</span><span>СВОДКА · {formatDate(item.published_at)}</span></div>
+      <div className="article-bottom-rule"><span>{item.author || 'Редакция'}</span><span>{formatDate(item.published_at)}</span></div>
     </article>
   );
 }

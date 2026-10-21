@@ -35,7 +35,6 @@ function NewsCard({ item, index }) {
           <span className="art-orbit art-orbit--one" />
           <span className="art-orbit art-orbit--two" />
           <span className="art-stamp">{categoryCode}</span>
-          <span className="art-caption">ИСТОРИЯ<br />ДНЯ</span>
           <span className="art-number">{String(item.id).padStart(2, '0')}</span>
         </div>
         <div className="news-card-content">
@@ -97,7 +96,7 @@ export default function HomePage() {
       .then((data) => { if (active) setStats(data); })
       .catch(() => {});
     return () => { active = false; };
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     let active = true;
@@ -112,7 +111,7 @@ export default function HomePage() {
       .catch((requestError) => { if (active) setError(requestError.message); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [activeQuery, activeCategory, page]);
+  }, [activeQuery, activeCategory, page, user]);
 
   function submitSearch(event) {
     event.preventDefault();
@@ -142,41 +141,39 @@ export default function HomePage() {
 
   const total = result?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const visibleCount = stats?.published ?? total;
+  const visibleCount = stats?.total_news ?? total;
 
   return (
     <div className="home-page page-wrap">
       <section className="home-hero">
         <div className="hero-copy">
-          <div className="eyebrow"><span className="eyebrow-dot" />НЕЗАВИСИМОЕ ГОРОДСКОЕ МЕДИА</div>
-          <h1>Важное —<br /><em>сразу к делу.</em></h1>
-          <p>События, решения и истории, которые помогают понять, что происходит вокруг.</p>
+          <div className="eyebrow"><span className="eyebrow-dot" />НОВОСТИ ГОРОДА</div>
+          <h1>Свежие<br /><em>новости.</em></h1>
+          <p>Лента новостей с поиском по словам и фильтром по темам.</p>
           <div className="hero-actions">
             <a className="hero-scroll-link" href="#news-list">Читать ленту <ArrowRight size={16} /></a>
             {user && <Link className="hero-create-link" to="/news/new"><Plus size={15} /> Добавить новость</Link>}
           </div>
         </div>
         <div className="hero-art" aria-hidden="true">
-          <div className="hero-art-top"><span>ВЫПУСК</span><span>№ 09 / 24</span></div>
           <div className="hero-sun" />
           <div className="hero-rings"><span /><span /><span /></div>
-          <div className="hero-art-bottom"><Sparkles size={14} /><span>город в фокусе</span></div>
+          <div className="hero-art-bottom"><Sparkles size={14} /><span>сводка</span></div>
           <span className="hero-art-mark">С</span>
         </div>
       </section>
 
       <section className="stats-strip" aria-label="Статистика новостной ленты">
-        <div className="stats-intro"><span className="stats-kicker">КОРОТКО О ГЛАВНОМ</span><span>Открытая лента — без регистрации</span></div>
+        <div className="stats-intro"><span className="stats-kicker">В ЛЕНТЕ</span><span>Читать можно без входа</span></div>
         <div className="stat-item"><strong>{visibleCount}</strong><span>публикаций</span></div>
         <div className="stat-item"><strong>{categories.length || '—'}</strong><span>тем</span></div>
-        <div className="stat-live"><span className="live-pulse" />лента обновляется</div>
       </section>
 
       <section className="news-section" id="news-list">
         <div className="section-heading">
           <div>
-            <div className="eyebrow eyebrow--muted">ЛЕНТА / СЕГОДНЯ</div>
-            <h2>Читайте по существу<span>.</span></h2>
+            <div className="eyebrow eyebrow--muted">ЛЕНТА</div>
+            <h2>Все новости<span>.</span></h2>
           </div>
           <span className="section-count">{loading ? '…' : `${total} ${total === 1 ? 'материал' : 'материалов'}`}</span>
         </div>
@@ -226,7 +223,7 @@ export default function HomePage() {
           <div className="empty-state">
             <span className="empty-icon"><Search size={20} /></span>
             <h3>Ничего не нашлось</h3>
-            <p>{activeQuery || activeCategory ? 'Попробуйте изменить запрос или выбрать другую тему.' : 'Пока здесь тихо. Первая новость скоро появится.'}</p>
+            <p>{activeQuery || activeCategory ? 'Попробуйте изменить запрос или выбрать другую тему.' : 'Новостей пока нет.'}</p>
             {(activeQuery || activeCategory) && <button className="button button-outline" type="button" onClick={() => { setSearchInput(''); setSearchParams({}); }}>Сбросить фильтры</button>}
           </div>
         )}
@@ -246,7 +243,7 @@ export default function HomePage() {
 
       <section className="editor-note">
         <div className="editor-note-mark">С<span>.</span></div>
-        <div><span className="eyebrow eyebrow--muted">ВАШ ГОРОД — ВАШ ГОЛОС</span><h2>Есть чем поделиться?</h2><p>Войдите, чтобы добавить материал, обновить публикацию или сохранить важное в ленте.</p></div>
+        <div><span className="eyebrow eyebrow--muted">ДЛЯ АВТОРОВ</span><h2>Есть новость?</h2><p>Войдите, чтобы добавлять новости и править свои.</p></div>
         {user ? <Link className="button button-primary" to="/news/new">Написать новость <ArrowUpRight size={16} /></Link> : <Link className="button button-outline" to="/login">Войти в редакцию <ArrowUpRight size={16} /></Link>}
       </section>
     </div>

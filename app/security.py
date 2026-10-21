@@ -1,11 +1,3 @@
-"""
-Пароли и JWT-токены.
-
-Пароль в БД не храним как есть: кладём «хэш».
-После логина выдаём токен — короткую подпись, которую клиент
-потом прикладывает в заголовке Authorization: Bearer ...
-"""
-
 import hashlib
 import hmac
 import os
@@ -13,8 +5,7 @@ from datetime import datetime, timedelta, timezone
 
 import jwt
 
-# Ключ берётся из переменной окружения SECRET_KEY. Значение по умолчанию —
-# только для локального запуска лабораторной, на сервере его обязательно задают.
+# Значение по умолчанию только для локального запуска.
 SECRET_KEY = os.getenv("SECRET_KEY", "lab1-news-portal-secret-change-me")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 12

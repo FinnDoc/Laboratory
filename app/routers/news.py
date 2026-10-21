@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import false, func, or_
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -18,19 +18,20 @@ from app.schemas import (
 router = APIRouter(tags=["Новости"])
 
 
-def _apply_visibility(query, user: User | None, is_published: bool | None):
-    """Гость видит только опубликованное. Редактор может смотреть черновики."""
+def _visible_to(user: User | None):
     if user is None:
-        if is_published is False:
-            return query.filter(false())
-        return query.filter(News.is_published.is_(True))
+        return News.is_published.is_(True)
+    return or_(News.is_published.is_(True), News.owner_id == user.id)
+
+
+def _apply_visibility(query, user: User | None, is_published: bool | None):
+    query = query.filter(_visible_to(user))
     if is_published is not None:
-        return query.filter(News.is_published == is_published)
+        query = query.filter(News.is_published == is_published)
     return query
 
 
 def _get_own_news(db: Session, news_id: int, user: User) -> News:
-    """Править и удалять новость может только тот, кто её создал."""
     item = db.query(News).filter(News.id == news_id).first()
     if item is None:
         raise HTTPException(status_code=404, detail="Новость не найдена")
@@ -100,7 +101,7 @@ def get_news(
     item = db.query(News).filter(News.id == news_id).first()
     if item is None:
         raise HTTPException(status_code=404, detail="Новость не найдена")
-    if not item.is_published and user is None:
+    if not item.is_published and (user is None or item.owner_id != user.id):
         raise HTTPException(status_code=404, detail="Новость не найдена")
     return item
 
@@ -132,7 +133,7 @@ def replace_news(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Полная замена: нужно прислать все поля, как при создании."""
+    """Полная замена: все поля обязательны."""
     item = _get_own_news(db, news_id, current_user)
     data = payload.model_dump()
     data["author"] = data["author"] or current_user.username
@@ -149,7 +150,7 @@ def update_news(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Частичное изменение: присылаются только те поля, которые меняем."""
+    """Частичное изменение: только переданные поля."""
     item = _get_own_news(db, news_id, current_user)
     data = payload.model_dump(exclude_unset=True)
     if not data:
@@ -189,15 +190,14 @@ def news_stats(
     db: Session = Depends(get_db),
     user: User | None = Depends(get_optional_user),
 ):
-    """Гость видит статистику только по опубликованным новостям."""
-    visible = [] if user is not None else [News.is_published.is_(True)]
-    total = db.query(func.count(News.id)).filter(*visible).scalar() or 0
+    visible = _visible_to(user)
+    total = db.query(func.count(News.id)).filter(visible).scalar() or 0
     published = (
         db.query(func.count(News.id)).filter(News.is_published.is_(True)).scalar() or 0
     )
     by_category_rows = (
         db.query(News.category, func.count(News.id))
-        .filter(*visible)
+        .filter(visible)
         .group_by(News.category)
         .order_by(News.category)
         .all()

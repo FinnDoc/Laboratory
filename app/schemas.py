@@ -1,10 +1,3 @@
-"""
-Pydantic-схемы — какие данные API принимает и отдаёт.
-
-Это не таблицы БД. Это «контракт» JSON на входе/выходе.
-Если клиент пришлёт ерунду, FastAPI вернёт 422 ещё до записи в БД.
-"""
-
 from datetime import datetime
 from typing import Literal
 

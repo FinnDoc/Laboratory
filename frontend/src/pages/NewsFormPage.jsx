@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ArrowLeft, Check, Eye, FileText, Send } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { apiRequest } from '../api';
+import { useAuth } from '../AuthContext';
 
 const initialForm = {
   title: '',
@@ -15,6 +16,7 @@ export default function NewsFormPage() {
   const { id } = useParams();
   const editing = Boolean(id);
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [form, setForm] = useState(initialForm);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(editing);
@@ -29,6 +31,10 @@ export default function NewsFormPage() {
     apiRequest(`/news/${id}`)
       .then((item) => {
         if (!active) return;
+        if (user && item.owner_id !== user.id) {
+          setError('Можно изменять только свои новости');
+          return;
+        }
         setForm({
           title: item.title,
           content: item.content,
@@ -40,7 +46,7 @@ export default function NewsFormPage() {
       .catch((requestError) => { if (active) setError(requestError.message); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [editing, id]);
+  }, [editing, id, user]);
 
   function updateField(event) {
     const { name, value, checked, type } = event.target;

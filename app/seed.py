@@ -1,5 +1,3 @@
-"""Стартовые данные, чтобы API сразу было чем показать в Swagger."""
-
 from datetime import timedelta
 
 from sqlalchemy.orm import Session

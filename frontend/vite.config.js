@@ -9,15 +9,13 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     strictPort: true,
-    // Vite is only used as a development server; allow Arena's proxied preview host.
-    allowedHosts: true,
     proxy: {
       '/api': {
         target: apiTarget,
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
-      // FastAPI's Swagger page requests this schema path from the same origin.
+      // Swagger, открытый через /api/docs, загружает схему с этого адреса.
       '/openapi.json': {
         target: apiTarget,
         changeOrigin: true,

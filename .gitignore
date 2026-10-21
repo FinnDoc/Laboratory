@@ -5,4 +5,6 @@ venv/
 news.db
 .idea/
 .vscode/
+node_modules/
+frontend/dist/
 КАК_ЭТО_РАБОТАЕТ.md

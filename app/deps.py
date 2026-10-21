@@ -1,7 +1,3 @@
-"""
-Зависимости FastAPI: «достань БД» и «кто сейчас залогинен».
-"""
-
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -10,7 +6,6 @@ from app.database import get_db
 from app.models import User
 from app.security import decode_access_token
 
-# tokenUrl должен совпадать с адресом логина — тогда в Swagger появится кнопка Authorize
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 optional_oauth2 = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)
 
@@ -39,7 +34,6 @@ def get_optional_user(
     token: str | None = Depends(optional_oauth2),
     db: Session = Depends(get_db),
 ) -> User | None:
-    """Если токена нет — это обычный читатель, не ошибка."""
     if not token:
         return None
     username = decode_access_token(token)

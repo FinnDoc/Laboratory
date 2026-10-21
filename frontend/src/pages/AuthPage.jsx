@@ -37,8 +37,8 @@ export default function AuthPage() {
           <div className="auth-visual-top"><span>СВОДКА</span><span>РЕДАКЦИЯ</span></div>
           <div className="auth-visual-mark"><Newspaper size={38} strokeWidth={1.2} /></div>
           <span className="auth-visual-big">С.</span>
-          <p>Город начинается<br />с хорошей истории.</p>
-          <div className="auth-visual-bottom"><span>ОТКРЫТАЯ ЛЕНТА</span><span>01 — 24</span></div>
+          <p>Новости<br />города.</p>
+          <div className="auth-visual-bottom"><span>ОТКРЫТАЯ ЛЕНТА</span></div>
         </div>
 
         <div className="auth-content">

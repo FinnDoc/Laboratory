@@ -111,7 +111,7 @@ function AppLayout() {
       <footer className="site-footer">
         <div className="footer-inner">
           <Link className="footer-brand" to="/">сводка<span>.</span></Link>
-          <p>Новости без лишнего шума.</p>
+          <p>Новостной портал.</p>
           <span className="footer-note">REST API · React · учебный проект</span>
         </div>
       </footer>
