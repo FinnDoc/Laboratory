@@ -8,3 +8,5 @@ news.db
 node_modules/
 frontend/dist/
 КАК_ЭТО_РАБОТАЕТ.md
+*.docx
+~$*
